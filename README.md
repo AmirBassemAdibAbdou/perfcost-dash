@@ -14,7 +14,7 @@ behind an API.
 ## Install
 
 ```bash
-pip install git+https://github.com/<you>/perfcost-dash          # from GitHub
+pip install git+https://github.com/AmirBassemAdibAbdou/perfcost-dash          # from GitHub
 pip install -e .                                                # from a local clone
 pip install -e ".[energy]"                                      # + built-in energy tracking (CodeCarbon)
 ```
