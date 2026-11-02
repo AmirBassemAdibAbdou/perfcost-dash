@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "perfcost-dash"
+version = "0.1.0"
+description = "Live dashboard that rates a classifier run on performance AND cost (latency, energy, throughput)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "Rana"}]
+dependencies = ["streamlit>=1.37", "pandas>=1.5", "numpy>=1.23", "altair>=5"]
+
+[project.optional-dependencies]
+energy = ["codecarbon>=2.3"]
+dev = ["pytest", "scikit-learn"]
+
+[project.scripts]
+perfcost = "perfcost.__main__:main"
+
+[tool.setuptools]
+packages = ["perfcost"]
