@@ -149,6 +149,40 @@ st.sidebar.caption("Score = weighted geometric mean of 0-1 component scores, rel
                    "component (1x → 1.00, 10x → 0.50, 100x → 0.33).")
 
 
+# ----------------------------------------------------------------------------- training progress
+def training_panel(meta, status):
+    """Progress of a fine-tuning run (meta["training"], written by the training loop): step, loss, time left."""
+    tr = meta.get("training")
+    if not tr:
+        return
+    step, total = tr.get("step") or 0, tr.get("total_steps")
+    sps = tr.get("s_per_step")
+    if tr.get("done"):
+        head = f"Training finished · {step:,} steps"
+    else:
+        head = f"Training · step {step:,}" + (f" / {total:,}" if total else "")
+    parts = [head]
+    if tr.get("loss") is not None:
+        parts.append(f"loss {tr['loss']:.4f}")
+    if sps:
+        parts.append(f"{sps:.1f} s per step")
+    if sps and total and not tr.get("done") and status == "running":
+        parts.append(f"about {fmt_dur(sps * max(0, total - step))} left")
+    if tr.get("updated_at") and not tr.get("done") and status == "running":
+        parts.append(f"last update {fmt_dur(time.time() - tr['updated_at'])} ago")
+    st.progress(1.0 if tr.get("done") else (min(1.0, step / total) if total else 0.0), text=" · ".join(parts))
+    curve = tr.get("loss_curve") or []
+    if len(curve) >= 2:
+        cd = pd.DataFrame(curve, columns=["step", "loss"])
+        st.altair_chart(alt.Chart(cd).mark_line(strokeWidth=2, color=BLUE).encode(
+            x=alt.X("step:Q", title="training step"), y=alt.Y("loss:Q", title="training loss",
+                                                             scale=alt.Scale(zero=False)),
+            tooltip=["step", alt.Tooltip("loss:Q", format=".4f")]).properties(height=160),
+            use_container_width=True)
+    if not tr.get("done") and status == "running":
+        st.caption("Predictions, the score and the comparison appear once the evaluation starts.")
+
+
 # ----------------------------------------------------------------------------- main body
 @st.fragment(run_every=None if paused else refresh)
 def body():
@@ -184,6 +218,7 @@ def body():
                                + (f" · about {fmt_dur(eta)} left" if eta else ""))
     else:
         st.caption(f"{n:,} predictions · elapsed {fmt_dur(elapsed)}")
+    training_panel(meta, status)
 
     c1, c2, c3 = st.columns(3)
     with c1:
