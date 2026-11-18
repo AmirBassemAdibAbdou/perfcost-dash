@@ -14,7 +14,7 @@ behind an API.
 ## Install
 
 ```bash
-pip install git+https://github.com/AmirBassemAdibAbdou/perfcost-dash          # from GitHub
+pip install git+https://github.com/<you>/perfcost-dash          # from GitHub
 pip install -e .                                                # from a local clone
 pip install -e ".[energy]"                                      # + built-in energy tracking (CodeCarbon)
 ```
@@ -55,6 +55,7 @@ Also available:
 | `with perfcost.start(...) as run:` | finishes the run automatically (marked *failed* on an exception) |
 | `perfcost.start(..., track_energy=True)` | measures energy itself with CodeCarbon (live power chart) |
 | `perfcost.import_run(name, y_true, y_pred, confidence, latency_ms, costs=[...])` | add an already finished run (e.g. from a CSV) so it can be compared |
+| `run.update_meta(training={"step": 120, "total_steps": 1251, "loss": 0.41, "s_per_step": 85.5, "loss_curve": [[1, 2.3], ...]})` | show training progress (fine-tuning) before any prediction: progress bar, loss curve, time left; add `"done": True` when training ends |
 | `perfcost.browse()` | open the dashboard for finished runs |
 | `perfcost.stop_server()` | stop the dashboard |
 
